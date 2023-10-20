@@ -51,7 +51,7 @@ import sys
 
 import gevent
 from volttron.utils import get_utc_seconds_from_epoch
-from volttron.client.vip.agent import Agent, Core, PubSub, compat
+from volttron.client.vip.agent import Agent, Core, PubSub
 from volttron import utils
 from volttron.client.messaging import topics
 from volttron.client.messaging.health import ALERT_KEY, STATUS_BAD, Status, \

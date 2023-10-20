@@ -1,8 +1,8 @@
 import gevent
 
-from volttron.platform.keystore import KeyStore
-from volttron.platform.messaging.health import STATUS_BAD, Status
-from volttron.platform.vip.agent.utils import build_agent
+from volttron.utils.keystore import KeyStore
+from volttron.client.messaging.health import STATUS_BAD, Status
+from volttron.client.vip.agent import build_agent
 
 
 test_subject = "Test subject1"
