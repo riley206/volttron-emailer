@@ -54,37 +54,13 @@ vctl install volttron-emailer --tag email --agent-config volttron-emailer/config
 ```
 
 ## Testing
-To verfiy emailer functionality, create this python file.
 
-**send_email.py**
-```python
-import gevent
+To verfiy functionality, Get the [send_email.py](./tests/send_email.py) file and run it with
 
-from volttron.utils.keystore import KeyStore
-from volttron.client.messaging.health import STATUS_BAD, Status
-from volttron.client.vip.agent import build_agent
-
-
-test_subject = "Test subject1"
-test_message = "this is a message that is sent via pubsub email"
-
-message = dict(subject=test_subject, message=test_message)
-
-ks = KeyStore()
-agent = build_agent(identity="test.email.pubsub", enable_store=False)
-agent.vip.pubsub.publish('pubsub', topic="platform/send_email", message=message)
-# agent.vip.health.set_status(STATUS_BAD, "It's bad man really bad!")
-agent.vip.health.send_alert("ALERT_KEY", Status.build(
-    STATUS_BAD, "It's really bad again!"
-))
-gevent.sleep(5)
-agent.core.stop()
-
-```
-Then run it with
 ```bash
 python3 send_email.py
 ```
+If all goes well, you should see an email from the address you specified in the config file. 
 
 Optional Headers
 ----------------
