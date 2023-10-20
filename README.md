@@ -50,7 +50,7 @@ Edit your config file
 Install and start emailer agent.
 
 ```shell
-vctl install volttron-emailer/ --tag email --agent-config volttron-emailer/config --start --force
+vctl install volttron-emailer --tag email --agent-config volttron-emailer/config --start --force
 ```
 
 ## Testing
