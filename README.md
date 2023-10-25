@@ -1,4 +1,4 @@
-Emailer
+volttron-emailer
 =======
 
 The Emailer agent allows an instance of the VOLTTRON platform to send
@@ -11,47 +11,82 @@ sending the following header and message to the `platform/send_email` topic
 which is monitored by the Emailer agent.  The following 
 is the expected payload for the message body and the optional header.
 
-Emailer Installation
-----------------
-Install volttron-emailer package
+
+# Prerequisites
+
+* Python 3.8
+
+## Python
+
+<details>
+<summary>To install Python 3.8, we recommend using <a href="https://github.com/pyenv/pyenv"><code>pyenv</code></a>.</summary>
 
 ```bash
-pip install volttron-emailer
+# install pyenv
+git clone https://github.com/pyenv/pyenv ~/.pyenv
+
+# setup pyenv (you should also put these three lines in .bashrc or similar)
+export PATH="${HOME}/.pyenv/bin:${PATH}"
+export PYENV_ROOT="${HOME}/.pyenv"
+eval "$(pyenv init -)"
+
+# install Python 3.8
+pyenv install 3.8.10
+
+# make it available globally
+pyenv global system 3.8.10
 ```
+</details>
 
+# Installation
 
-Start VOLTTRON
+1. Create and activate a virtual environment.
 
-```shell
-source env/bin/activate
-volttron -vv -l volttron.log &>/dev/null &
-```
+    ```shell
+    python -m venv env
+    source env/bin/activate
+    ```
 
-Edit your config file
+2. Install volttron and start the platform.
 
-```json
-{
-    "smtp-address": "<smtp-address>",
-    "smtp-username":"<smtp-username>",
-    "smtp-password":"<smtp-password>",
-    "smtp-port":<smtp-port>,
-    "smtp-tls":<true/false>,
-    "from-address": "foo@foo.com",
-    "to-addresses": [
-        "foo1@foo.com",
-        "foo2@foo.com"
-    ],
+    ```shell
+    pip install volttron
 
-    # Only send a certain alert-key message every 120 minutes.
-    "allow-frequency-minutes": 120
-}
+    # Start platform with output going to volttron.log
+    volttron -vv -l volttron.log &
+    ```
 
-```
-Install and start emailer agent.
+    Install volttron-emailer library.
 
-```shell
-vctl install volttron-emailer --tag email --agent-config volttron-emailer/config --start --force
-```
+    ```bash
+    pip install volttron-emailer
+    ```
+
+3. Edit your config file.
+
+    ```json
+    {
+        "smtp-address": "<smtp-address>",
+        "smtp-username":"<smtp-username>",
+        "smtp-password":"<smtp-password>",
+        "smtp-port":<smtp-port>,
+        "smtp-tls":<true/false>,
+        "from-address": "foo@foo.com",
+        "to-addresses": [
+            "foo1@foo.com",
+            "foo2@foo.com"
+        ],
+
+        # Only send a certain alert-key message every 120 minutes.
+        "allow-frequency-minutes": 120
+    }
+
+    ```
+4. Install and start emailer agent.
+
+    ```shell
+    vctl install volttron-emailer --tag email --agent-config volttron-emailer/config --start --force
+    ```
 
 ## Testing
 
@@ -153,3 +188,20 @@ supported by the Forward Historian agent.
     "allow-frequency-minutes": 120
 }
 ```
+# Disclaimer Notice
+
+This material was prepared as an account of work sponsored by an agency of the
+United States Government.  Neither the United States Government nor the United
+States Department of Energy, nor Battelle, nor any of their employees, nor any
+jurisdiction or organization that has cooperated in the development of these
+materials, makes any warranty, express or implied, or assumes any legal
+liability or responsibility for the accuracy, completeness, or usefulness or any
+information, apparatus, product, software, or process disclosed, or represents
+that its use would not infringe privately owned rights.
+
+Reference herein to any specific commercial product, process, or service by
+trade name, trademark, manufacturer, or otherwise does not necessarily
+constitute or imply its endorsement, recommendation, or favoring by the United
+States Government or any agency thereof, or Battelle Memorial Institute. The
+views and opinions of authors expressed herein do not necessarily state or
+reflect those of the United States Government or any agency thereof.
