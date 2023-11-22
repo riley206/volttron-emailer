@@ -56,13 +56,7 @@ pyenv global system 3.8.10
     volttron -vv -l volttron.log &
     ```
 
-    Install volttron-emailer library.
-
-    ```bash
-    pip install volttron-emailer
-    ```
-
-3. Edit your config file.
+3. Create you configuration file, in this example the file is named `config`
 
     ```json
     {
@@ -80,12 +74,11 @@ pyenv global system 3.8.10
         # Only send a certain alert-key message every 120 minutes.
         "allow-frequency-minutes": 120
     }
-
     ```
 4. Install and start emailer agent.
 
     ```shell
-    vctl install volttron-emailer --tag email --agent-config volttron-emailer/config --start --force
+    vctl install volttron-emailer --tag email --agent-config <path to config> --start --force
     ```
 
 ## Testing
