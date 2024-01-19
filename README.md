@@ -10,7 +10,7 @@ sending the following header and message to the `platform/send_email` topic
 which is monitored by the Emailer agent.  The following
 is the expected payload for the message body and the optional header.
 
-# Prerequisites
+## Prerequisites
 
 * Python 3.10
 
@@ -37,7 +37,7 @@ pyenv global system 3.10
 
 </details>
 
-# Installation
+## Installation
 
 1. Create and activate a virtual environment.
 
@@ -86,10 +86,9 @@ cd config
 
 <details>
 
-<summary>Configuration Overview</summary>
+<summary> Configuration Overview</summary>
 
-Optional Headers
----------------------
+## Optional Headers
 
 Emails by default will be sent to the initial configured email
 addresses. The below headers will overwrite those properties for the
@@ -102,8 +101,7 @@ current email being sent.
 }
 ```
 
-Required Message Body
----------------------
+## Required Message Body
 
 ``` json
 {
@@ -112,8 +110,7 @@ Required Message Body
 }
 ```
 
-Example Sending of Email
-------------------------
+## Example Sending of Email
 
 ``` python
 headers = {
@@ -130,8 +127,7 @@ self.vip.pubsub.publish('pubsub', topic='platform/send_email',
                         headers=headers, message=message)
 ```
 
-Configuration Options
----------------------
+## Configuration Options
 
 The following JSON configuration file shows all the options currently
 supported by the Forward Historian agent.
@@ -188,11 +184,11 @@ vctl install volttron-emailer --tag email --agent-config <path to config> --star
 Once installed, you should see the data being published by viewing the Volttron logs file that was created in step 2.
 To watch the logs, open a separate terminal and run the following command:
 
-```
+```bash
 tail -f <path to folder containing volttron.log>/volttron.log
 ```
 
-## Testing
+7. Testing
 
 To verfiy functionality, Get the [send_email.py](./tests/send_email.py) file and run it with
 
@@ -202,7 +198,7 @@ python3 send_email.py
 
 This script sets up test data, creates an agent, and publishes a message that will trigger the emailer. If all goes well, you should see an email from the address you specified in the config file.
 
-# Disclaimer Notice
+## Disclaimer Notice
 
 This material was prepared as an account of work sponsored by an agency of the
 United States Government.  Neither the United States Government nor the United
