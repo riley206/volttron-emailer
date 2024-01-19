@@ -90,9 +90,7 @@ cd config
 
 ## Optional Headers
 
-Emails by default will be sent to the initial configured email
-addresses. The below headers will overwrite those properties for the
-current email being sent.
+Emails by default will be sent to the initial configured email addresses. The below headers will overwrite those properties for the current email being sent. In this below example, the headers are "from-address" and "to-addresses". Please fill in the values after the : and within the quotations with your own email addresses.
 
 ``` json
 {
