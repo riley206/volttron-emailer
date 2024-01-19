@@ -24,25 +24,23 @@
 
 
 
+import logging
+
+# Import smtplib for the actual sending function
+import smtplib
+import socket
+import sys
 from collections import defaultdict
 
 # Import the email modules we'll need
 from email.mime.text import MIMEText
-import logging
-import socket
-
-# Import smtplib for the actual sending function
-import smtplib
-import sys
 
 import gevent
-from volttron.utils import get_utc_seconds_from_epoch
-from volttron.client.vip.agent import Agent, Core, PubSub
 from volttron import utils
 from volttron.client.messaging import topics
-from volttron.client.messaging.health import ALERT_KEY, STATUS_BAD, Status, \
-    STATUS_GOOD
-from volttron.client.vip.agent import Agent
+from volttron.client.messaging.health import ALERT_KEY, STATUS_BAD, STATUS_GOOD, Status
+from volttron.client.vip.agent import Agent, Core, PubSub
+from volttron.utils import get_utc_seconds_from_epoch
 
 utils.setup_logging()
 _log = logging.getLogger(__name__)
@@ -103,7 +101,7 @@ class EmailerAgent(Agent):
 
         self.vip.config.subscribe(self.configure_main,
                                   actions=["NEW", "UPDATE"], pattern="*")
-	
+
         # Keep track of keys that have been added to send with.
         self.tosend = {}
         # Keep track of how often we send an email out based on key so we don't overload admins.
@@ -376,5 +374,3 @@ if __name__ == '__main__':
         sys.exit(main())
     except KeyboardInterrupt:
         pass
-
-
