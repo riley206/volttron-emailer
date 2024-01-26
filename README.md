@@ -140,7 +140,7 @@ supported by the Forward Historian agent.
 Install and start emailer agent.
 
 ```shell
-vctl install volttron-emailer --tag email --agent-config <path to config> --start --force
+vctl install volttron-emailer --tag email --agent-config emailer_config.json --start --force
 ```
 
 View the status of the installed agent.
