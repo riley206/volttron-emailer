@@ -10,79 +10,25 @@ sending the following header and message to the `platform/send_email` topic
 which is monitored by the Emailer agent.  The following
 is the expected payload for the message body and the optional header.
 
-## Prerequisites
+## Requires
 
-* Python 3.10
-
-## Python
-
-<details>
-<summary>To install Python 3.10, we recommend using <a href="https://github.com/pyenv/pyenv"><code>pyenv</code></a>.</summary>
-
-```bash
-# install pyenv
-git clone https://github.com/pyenv/pyenv ~/.pyenv
-
-# setup pyenv (you should also put these three lines in .bashrc or similar)
-export PATH="${HOME}/.pyenv/bin:${PATH}"
-export PYENV_ROOT="${HOME}/.pyenv"
-eval "$(pyenv init -)"
-
-# install Python 3.10
-pyenv install 3.10
-
-# make it available globally
-pyenv global system 3.10
-```
-
-</details>
+* python >= 3.10
+* volttron >= 10.0
 
 ## Installation
 
-1. Create and activate a virtual environment.
+Before installing, VOLTTRON should be installed and running.  Its virtual environment should be active.
+Information on how to install of the VOLTTRON platform can be found
+[here](https://github.com/eclipse-volttron/volttron-core).
 
-```shell
-python -m venv env
-source env/bin/activate
-```
-
-2. Install volttron and start the platform.
-
-```shell
-pip install volttron
-
-# Start platform with output going to volttron.log
-volttron -vv -l volttron.log &
-```
-
-3. Create a config directory and navigate to it:
+Create a directory called `config` and use the change directory command to enter it.
 
 ```shell
 mkdir config
 cd config
 ```
 
-4. Navigate to the config directory and create a file called `config` and add the following JSON to it:
-
-```json
-{
-    "smtp-address": "<smtp-address>",
-    "smtp-username":"<smtp-username>",
-    "smtp-password":"<smtp-password>",
-    "smtp-port":<smtp-port>,
-    "smtp-tls":<true/false>,
-    "from-address": "foo@foo.com",
-    "to-addresses": [
-        "foo1@foo.com",
-        "foo2@foo.com"
-    ],
-
-    # Only send a certain alert-key message every 120 minutes.
-    "allow-frequency-minutes": 120
-}
-```
-
-5. Fill out each field in your configuration file, refer to the configuration overview if needed.
+After entering the config directory, create a file called `emailer_config.json`, use the below JSON to populate your new file. Refer to the configuration overview if needed.
 
 <details>
 
@@ -173,28 +119,47 @@ supported by the Forward Historian agent.
 
 </details>
 
-6. Install and start emailer agent.
+```json
+{
+    "smtp-address": "<smtp-address>",
+    "smtp-username":"<smtp-username>",
+    "smtp-password":"<smtp-password>",
+    "smtp-port":<smtp-port>,
+    "smtp-tls":<true/false>,
+    "from-address": "foo@foo.com",
+    "to-addresses": [
+        "foo1@foo.com",
+        "foo2@foo.com"
+    ],
+
+    # Only send a certain alert-key message every 120 minutes.
+    "allow-frequency-minutes": 120
+}
+```
+
+Install and start emailer agent.
 
 ```shell
 vctl install volttron-emailer --tag email --agent-config <path to config> --start --force
 ```
 
-Once installed, you should see the data being published by viewing the Volttron logs file that was created in step 2.
-To watch the logs, open a separate terminal and run the following command:
+View the status of the installed agent.
 
-```bash
-tail -f <path to folder containing volttron.log>/volttron.log
+```shell
+vctl status
 ```
 
-7. Testing
-
-To verfiy functionality, Get the [send_email.py](./tests/send_email.py) file and run it with
+To verfiy functionality, Get the [send_email.py](./tests/send_email.py) file and run it with. If all is well, an email will be delivered to the address or addresses specified.
 
 ```bash
 python3 send_email.py
 ```
 
-This script sets up test data, creates an agent, and publishes a message that will trigger the emailer. If all goes well, you should see an email from the address you specified in the config file.
+## Development
+
+Please see the following for contributing guidelines [contributing](https://github.com/eclipse-volttron/volttron-core/blob/develop/CONTRIBUTING.md).
+
+Please see the following helpful guide about [developing modular VOLTTRON agents](https://github.com/eclipse-volttron/volttron-core/blob/develop/DEVELOPING_ON_MODULAR.md)
 
 ## Disclaimer Notice
 
