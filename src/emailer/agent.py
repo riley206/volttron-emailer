@@ -5,7 +5,7 @@
 #
 # ===----------------------------------------------------------------------===
 #
-# Copyright 2022 Battelle Memorial Institute
+# Copyright 2024 Battelle Memorial Institute
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
 # use this file except in compliance with the License. You may obtain a copy
@@ -21,8 +21,6 @@
 #
 # ===----------------------------------------------------------------------===
 # }}}
-
-
 
 import logging
 
@@ -45,7 +43,6 @@ from volttron.utils import get_utc_seconds_from_epoch
 utils.setup_logging()
 _log = logging.getLogger(__name__)
 __version__ = '1.4.2'
-
 """
 The `pyclass:EmailAgent` is responsible for sending emails for an instance.  It
 has been written so that any agent on the instance can send emails through it
@@ -80,17 +77,17 @@ class EmailerAgent(Agent):
         self.smtp_port = self.config.get("smtp-port", None)
         self.smtp_username = self.config.get("smtp-username", None)
         self.smtp_password = self.config.get("smtp-password", None)
-        self.smtp_tls = self.config.get("smtp-tls",None)
+        self.smtp_tls = self.config.get("smtp-tls", None)
         self.allow_frequency_minutes = self.config.get("allow-frequency-minutes", 60)
         self._allow_frequency_seconds = self.allow_frequency_minutes * 60
-        self.smtp_tls = self.config.get("smtp-tls",None)
+        self.smtp_tls = self.config.get("smtp-tls", None)
         self.default_config = dict(smtp_address=self.smtp_address,
                                    from_address=self.from_address,
                                    to_addresses=self.to_address,
                                    smtp_port=self.smtp_port,
                                    smtp_username=self.smtp_username,
                                    smtp_password=self.smtp_password,
-                                   smtp_tls = self.smtp_tls,
+                                   smtp_tls=self.smtp_tls,
                                    allow_frequency_minutes=self.allow_frequency_minutes,
                                    alert_from_address=self.from_address,
                                    alert_to_addresses=self.to_address,
@@ -99,27 +96,27 @@ class EmailerAgent(Agent):
         self.current_config = None
         self.vip.config.set_default("config", self.default_config)
 
-        self.vip.config.subscribe(self.configure_main,
-                                  actions=["NEW", "UPDATE"], pattern="*")
+        self.vip.config.subscribe(self.configure_main, actions=["NEW", "UPDATE"], pattern="*")
 
         # Keep track of keys that have been added to send with.
         self.tosend = {}
         # Keep track of how often we send an email out based on key so we don't overload admins.
         self.sent_alert_emails = {}
 
-    def _test_smtp_address(self, smtp_address,smtp_port,smtp_username,smtp_password):
+    def _test_smtp_address(self, smtp_address, smtp_port, smtp_username, smtp_password):
         try:
-            server = smtplib.SMTP(self.current_config.get('smtp_address', None),self.current_config.get('smtp_port', None))
+            server = smtplib.SMTP(self.current_config.get('smtp_address', None),
+                                  self.current_config.get('smtp_port', None))
             #stmplib docs recommend calling ehlo() before & after starttls()
             server.ehlo()
             if self.current_config.get('smtp_username') is not None:
                 server.starttls()
                 server.ehlo()
-                server.login(self.current_config.get('smtp_username', None), self.current_config.get('smtp_password', None))
+                server.login(self.current_config.get('smtp_username', None),
+                             self.current_config.get('smtp_password', None))
             server.close()
         except Exception as e:
             _log.error(e.args)
-
 
     def configure_main(self, config_name, action, contents):
         """
@@ -132,8 +129,10 @@ class EmailerAgent(Agent):
 
         self.vip.pubsub.subscribe('pubsub', topics.PLATFORM_SEND_EMAIL, self.on_email_message)
 
-        self.vip.pubsub.subscribe('pubsub', topics.ALERTS_BASE,self.on_alert_message)
-        self.vip.pubsub.subscribe('pubsub',prefix=topics.ALERTS.format(agent_class='',agent_identity=''),callback=self.on_alert_message)
+        self.vip.pubsub.subscribe('pubsub', topics.ALERTS_BASE, self.on_alert_message)
+        self.vip.pubsub.subscribe('pubsub',
+                                  prefix=topics.ALERTS.format(agent_class='', agent_identity=''),
+                                  callback=self.on_alert_message)
         self.current_config = self.default_config.copy()
         self.current_config.update(contents)
 
@@ -146,7 +145,8 @@ class EmailerAgent(Agent):
         smtp_password = self.current_config.get('smtp_password', None)
         if action == "UPDATE":
             try:
-                with gevent.with_timeout(3, self._test_smtp_address, smtp_address,smtp_port,smtp_username,smtp_password):
+                with gevent.with_timeout(3, self._test_smtp_address, smtp_address, smtp_port,
+                                         smtp_username, smtp_password):
                     pass
             except Exception as e:
                 self.vip.health.set_status(STATUS_BAD, "Invalid SMTP Address")
@@ -230,10 +230,12 @@ class EmailerAgent(Agent):
         sent_email_record = None
         try:
             _log.info("Sending email {}".format(mime_message['Subject']))
-            sent_email_record = {"from_address": from_address,
-                                 "recipients": to_addresses,
-                                 "subject": mime_message['Subject'],
-                                 "message_content": mime_message.as_string()}
+            sent_email_record = {
+                "from_address": from_address,
+                "recipients": to_addresses,
+                "subject": mime_message['Subject'],
+                "message_content": mime_message.as_string()
+            }
             cfg = self.current_config
             smtp_address = cfg['smtp_address']
             smtp_port = cfg['smtp_port']
@@ -249,20 +251,16 @@ class EmailerAgent(Agent):
                 server.login(smtp_username, smtp_password)
             server.sendmail(from_address, to_addresses, mime_message.as_string())
             server.close()
-            self.vip.health.set_status(STATUS_GOOD,
-                                       "Successfully sent email.")
+            self.vip.health.set_status(STATUS_GOOD, "Successfully sent email.")
             send_successful = True
         except Exception as e:
-            _log.error(
-                'Unable to send email message: %s' % mime_message.as_string())
+            _log.error('Unable to send email message: %s' % mime_message.as_string())
             _log.error(e.args)
-            self.vip.health.set_status(STATUS_BAD,
-                                       "Unable to send email to recipients")
+            self.vip.health.set_status(STATUS_BAD, "Unable to send email to recipients")
         finally:
             if sent_email_record is not None:
                 sent_email_record['successful'] = send_successful
-                self.vip.pubsub.publish("pubsub", "record/sent_email",
-                                        message=sent_email_record)
+                self.vip.pubsub.publish("pubsub", "record/sent_email", message=sent_email_record)
 
     def send_email(self, from_address, to_addresses, subject, message):
         """
@@ -303,14 +301,15 @@ class EmailerAgent(Agent):
         :param message:
         """
         if not self.current_config.get('send_alerts_enabled'):
-            _log.warning('Alert message found but not sent enable alerts enable by setting send_alerts_enabled to True')
+            _log.warning(
+                'Alert message found but not sent enable alerts enable by setting send_alerts_enabled to True'
+            )
             return
         mailkey = headers.get(ALERT_KEY, None)
 
         if not mailkey:
-            _log.error("alert_key not found in header "
-                       + "for message topic: {} message: {}"
-                       .format(topic, message))
+            _log.error("alert_key not found in header " +
+                       "for message topic: {} message: {}".format(topic, message))
             return
 
         last_sent_key = tuple([mailkey, topic])
@@ -329,7 +328,7 @@ class EmailerAgent(Agent):
             current_time = get_utc_seconds_from_epoch()
             allow_frequency_seconds = self.current_config['allow_frequency_seconds']
             if last_sent_time + allow_frequency_seconds < current_time:
-                should_send=True
+                should_send = True
 
         if not should_send:
             _log.debug('Waiting for time to pass for email.')
@@ -362,8 +361,7 @@ class EmailerAgent(Agent):
 def main(argv=sys.argv):
     """Main method called by the aip."""
     try:
-        utils.vip_main(EmailerAgent, identity="platform.emailer",
-                       version = __version__)
+        utils.vip_main(EmailerAgent, identity="platform.emailer", version=__version__)
     except Exception as e:
         _log.exception('unhandled exception')
 
