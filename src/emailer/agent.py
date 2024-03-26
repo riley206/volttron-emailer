@@ -42,7 +42,6 @@ from volttron.utils import get_utc_seconds_from_epoch
 
 utils.setup_logging()
 _log = logging.getLogger(__name__)
-__version__ = '1.4.2'
 """
 The `pyclass:EmailAgent` is responsible for sending emails for an instance.  It
 has been written so that any agent on the instance can send emails through it
