@@ -1,5 +1,8 @@
 # volttron-emailer
 
+![Passing?](https://github.com/eclipse-volttron/volttron-emailer/actions/workflows/run-tests.yml/badge.svg)
+[![pypi version](https://img.shields.io/pypi/v/volttron-emailer.svg)](https://pypi.org/project/volttron-emailer/)
+
 `volttron-emailer` allows an instance of the VOLTTRON platform to send
 email.  When used in combination with the Alert agent, alerts from
 unpublished configured devices will automatically be sent.  In addition,
