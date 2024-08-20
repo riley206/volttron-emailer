@@ -39,6 +39,7 @@ from volttron.client.messaging import topics
 from volttron.client.messaging.health import ALERT_KEY, STATUS_BAD, STATUS_GOOD, Status
 from volttron.client.vip.agent import Agent, Core, PubSub
 from volttron.utils import get_utc_seconds_from_epoch
+from smtplib import SMTPException
 
 utils.setup_logging()
 _log = logging.getLogger(__name__)
@@ -135,8 +136,7 @@ class EmailerAgent(Agent):
         self.current_config = self.default_config.copy()
         self.current_config.update(contents)
 
-        self.current_config['allow_frequency_seconds'] = self.current_config.get(
-            'allow_frequency_minutes', 60) * 60
+        self.current_config['allow_frequency_seconds'] = self.current_config.get('allow_frequency_minutes', 60) * 60
 
         smtp_address = self.current_config.get('smtp_address', None)
         smtp_port = self.current_config.get('smtp_port', None)
@@ -144,8 +144,8 @@ class EmailerAgent(Agent):
         smtp_password = self.current_config.get('smtp_password', None)
         if action == "UPDATE":
             try:
-                with gevent.with_timeout(3, self._test_smtp_address, smtp_address, smtp_port,
-                                         smtp_username, smtp_password):
+                with gevent.with_timeout(3, self._test_smtp_address, smtp_address, smtp_port, smtp_username,
+                                         smtp_password):
                     pass
             except Exception as e:
                 self.vip.health.set_status(STATUS_BAD, "Invalid SMTP Address")
@@ -252,10 +252,24 @@ class EmailerAgent(Agent):
             server.close()
             self.vip.health.set_status(STATUS_GOOD, "Successfully sent email.")
             send_successful = True
+
+        except SMTPException as smtp_err:
+            _log.error(f"SMTP error occurred: {smtp_err}")
+            _log.error(f"Unable to send email message: {mime_message.as_string()}")
+            self.vip.health.set_status(
+                STATUS_BAD,
+                "SMTP configuration or authentication issue. Please check your SMTP settings and credentials.")
+
+        except OSError as os_err:
+            _log.error(f"Network-related error occurred: {os_err}")
+            _log.error(f"Unable to send email message: {mime_message.as_string()}")
+            self.vip.health.set_status(
+                STATUS_BAD, "Network issue. Please check your internet connection and SMTP server accessibility.")
+
         except Exception as e:
-            _log.error('Unable to send email message: %s' % mime_message.as_string())
-            _log.error(e.args)
-            self.vip.health.set_status(STATUS_BAD, "Unable to send email to recipients")
+            _log.error(f"An unexpected error occurred: {e}")
+            _log.error(f"Unable to send email message: {mime_message.as_string()}")
+            self.vip.health.set_status(STATUS_BAD, f"Unable to send email to recipients: {e}")
         finally:
             if sent_email_record is not None:
                 sent_email_record['successful'] = send_successful
@@ -300,15 +314,12 @@ class EmailerAgent(Agent):
         :param message:
         """
         if not self.current_config.get('send_alerts_enabled'):
-            _log.warning(
-                'Alert message found but not sent enable alerts enable by setting send_alerts_enabled to True'
-            )
+            _log.warning('Alert message found but not sent enable alerts enable by setting send_alerts_enabled to True')
             return
         mailkey = headers.get(ALERT_KEY, None)
 
         if not mailkey:
-            _log.error("alert_key not found in header " +
-                       "for message topic: {} message: {}".format(topic, message))
+            _log.error("alert_key not found in header " + "for message topic: {} message: {}".format(topic, message))
             return
 
         last_sent_key = tuple([mailkey, topic])
