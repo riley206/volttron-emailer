@@ -41,7 +41,7 @@ from volttron.client.vip.agent import Agent, Core, PubSub
 from volttron.utils import get_utc_seconds_from_epoch
 from smtplib import SMTPException
 
-utils.setup_logging()
+
 _log = logging.getLogger(__name__)
 """
 The `pyclass:EmailAgent` is responsible for sending emails for an instance.  It
