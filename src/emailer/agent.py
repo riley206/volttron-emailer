@@ -37,6 +37,7 @@ import gevent
 from volttron import utils
 from volttron.client.messaging import topics
 from volttron.client.messaging.health import ALERT_KEY, STATUS_BAD, STATUS_GOOD, Status
+from volttron.client.vip.agent.subsystems.rpc import RPC
 from volttron.client.vip.agent import Agent, Core, PubSub
 from volttron.utils import get_utc_seconds_from_epoch
 from smtplib import SMTPException
@@ -275,6 +276,7 @@ class EmailerAgent(Agent):
                 sent_email_record['successful'] = send_successful
                 self.vip.pubsub.publish("pubsub", "record/sent_email", message=sent_email_record)
 
+    @RPC.export
     def send_email(self, from_address, to_addresses, subject, message):
         """
         RPC Method allowing a platform to send an email address.
@@ -373,7 +375,7 @@ def main(argv=sys.argv):
     try:
         utils.vip_main(EmailerAgent, identity="platform.emailer", version="")
     except Exception as e:
-        _log.exception('unhandled exception')
+        _log.exception(f'unhandled exception: {e}')
 
 
 if __name__ == '__main__':
